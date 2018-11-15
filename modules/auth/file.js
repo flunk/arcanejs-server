@@ -29,8 +29,7 @@ class FileAuth {
     }
 
     getRoles(username) {
-        console.log('fileAuth backend does not support roles.');
-        return [];
+        return this.getUser(username).roles;
     }
 
     checkPassword(user, password) {

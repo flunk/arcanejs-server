@@ -149,6 +149,7 @@ function addUser(name, pass, secret) {
     user.name = name;
     user.hash = bcrypt.hashSync(pass, bcrypt.genSaltSync(10));
     user.secret = secret;
+    user.roles = [];
     if (users == undefined) {
         users = [];
     }
