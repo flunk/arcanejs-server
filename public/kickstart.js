@@ -47,6 +47,7 @@ manifest = [
 	"app.js"
 ];
 
+filesIncluded = [];
 
 String.prototype.endsWith = function (s) {
 	return this.length >= s.length && this.substr(this.length - s.length) == s;
@@ -106,7 +107,7 @@ class LoadingBar{
 
 class Includer{
 	constructor(manifest, callback, hideLoadingBar){
-      	//console.log(manifest);
+
       	this.manifest = manifest;
       	this.total = manifest.length;
       	this.loaded = 0;
@@ -123,29 +124,33 @@ class Includer{
   	load(){
         let src = this.manifest.shift();
       	let el = null;
-      
-      	if(src.endsWith(".js")){
-        	el = document.createElement( 'script' );
-        	el.setAttribute("data-presets", "es2017");
-            el.onload = () => {
-                this.done();
-            };
-        	el.src = src;
-          	document.head.appendChild( el );
-        } else if(src.endsWith(".css")){
-            el = document.createElement( 'link' );
-            el.setAttribute("rel", "stylesheet");
-            el.setAttribute("type", "text/css");
-            el.onload = () => {
-                this.done();
-            }; 
-          	el.setAttribute("href", src);
-          	document.head.appendChild( el );
+        if(filesIncluded.indexOf(src) === -1){
+          	if(src.endsWith(".js")){
+            	el = document.createElement( 'script' );
+            	el.setAttribute("data-presets", "es2017");
+                el.onload = () => {
+                    filesIncluded.push(src);
+                    this.done();
+                };
+            	el.src = src;
+              	document.head.appendChild( el );
+            } else if(src.endsWith(".css")){
+                el = document.createElement( 'link' );
+                el.setAttribute("rel", "stylesheet");
+                el.setAttribute("type", "text/css");
+                el.onload = () => {
+                    this.done();
+                }; 
+              	el.setAttribute("href", src);
+              	document.head.appendChild( el );
+            } else {
+            	console.log("Unknown filetype: " + src);
+              	if(this.callback){
+                	this.callback(false); 
+                }
+            }            
         } else {
-        	console.log("Unknown filetype: " + src);
-          	if(this.callback){
-            	this.callback(false); 
-            }
+            this.done();
         }
     }
 
@@ -173,7 +178,16 @@ class PackageLoader{
         	this.loadingBar = new LoadingBar(); 	
         }
         
-        this.getPack(manifest, (res)=>{
+        let filteredManifest = [];
+        
+        manifest.forEach((src)=>{
+            if(filesIncluded.indexOf(src) === -1){
+                filteredManifest.push(src);
+            }
+        });
+        
+        
+        this.getPack(filteredManifest, (res)=>{
             let pack = JSON.parse(res.responseText);
             console.log(pack);
             let pacLocation = "/api/cache/pack/" + pack.hash;
