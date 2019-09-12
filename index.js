@@ -37,6 +37,21 @@ if (app.sessions == undefined) {
     app.sessions = {};
 }
 
+if (options.sessionTimeout) {
+    setInterval(() => {
+        let date = new Date();
+        for (const [key, value] of Object.entries(app.sessions)) {
+            if (!(value.lastUsed instanceof Date)) {
+                value.lastUsed = new Date(value.lastUsed);
+            }
+            if (date - value.lastUsed > options.sessionTimeout * 1000) {
+                delete app.sessions[key];
+            }
+        }
+        storage.setItem('sessions', app.sessions);
+    }, 5000);
+}
+
 // Authorization stuff
 let authModuleConfig = storage.getItem('auth');
 const AuthModule = require('./modules/auth')(authModuleConfig);
@@ -69,6 +84,7 @@ function firstRun() {
     storage.setItem('rootDir', rootDir);
 
     options.twoFactorEnabled = askQuestion('Enable 2 Factor authentication? : ');
+    options.sessionTimeout = readlineSync.question('Timeout session after? (seconds): ', {defaultInput: '1800'});
     options.host = readlineSync.question('Hostname to listen on: ');
 
     storage.setItem('options', options);
@@ -151,6 +167,7 @@ function newSession(username, roles) {
     session.username = username;
     session.roles = roles;
     session.loggedIn = true;
+    session.lastUsed = new Date();
     app.sessions[session.uuid] = session;
     console.log(session);
     storage.setItem('sessions', app.sessions);
@@ -163,6 +180,7 @@ var checkSession = function (req, res, checkCsrf, callback) {
             if (checkCsrf) {
                 if (req.get('X-Csrf-Token') == app.sessions[req.cookies.sessionId].csrfToken) {
                     let session = app.sessions[req.cookies.sessionId];
+                    session.lastUsed = new Date();
                     req.session = session;
                     res.session = session;
                     callback(session);
@@ -171,10 +189,12 @@ var checkSession = function (req, res, checkCsrf, callback) {
                     res.send('Incorrect CSRF Token');
                 }
             } else {
+                app.sessions[req.cookies.sessionId].lastUsed = new Date();
                 callback(app.sessions[req.cookies.sessionId]);
             }
 
         } else {
+            delete app.sessions[req.cookies.sessionId];
             res.statusCode = 401;
             res.send('Session logged out');
         }

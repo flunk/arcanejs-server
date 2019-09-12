@@ -1,11 +1,11 @@
 class LoginScreen extends Modal {
     constructor( loginManager ){
-  		super("Login");
+      	super("Login", null, null, null, true);
       	this.loginManager = loginManager;
       	this.inputField = new Input( "Username", false );
       	this.passwordField = new Input( "Password", true );
       	this.tokenField = new Input( "Token", true );
-      	this.loginButton = 	new Button("Login")
+      	this.loginButton = 	new Button("Login");
       
       	this.body.addChild( this.inputField );
       	this.body.addChild( new Br() );

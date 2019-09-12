@@ -16,7 +16,7 @@ class SessionManager{
             } else {
                 new LoginScreen( this );
             }
-        });
+        }, null, true);
     }
   
  	login( username, password, token, callback){
@@ -29,6 +29,6 @@ class SessionManager{
             } else {
                 callback ( false );
             }
-        });
+        }, null, true);
     }
 }

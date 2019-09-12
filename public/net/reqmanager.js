@@ -14,7 +14,13 @@ class ReqManager{
         Httpreq.onload = (e) => {
           if (Httpreq.readyState === 4) {
               loadingBar.done();
-              callback(Httpreq);
+              if (Httpreq.status === 401) {
+                  // We've been logged out...
+                  new Logoutmodal();
+              }
+              else {
+                  callback(Httpreq);
+              }
           }
         };
 
@@ -27,7 +33,7 @@ class ReqManager{
 		Httpreq.send(null);
     }
 
-    post( url , data, callback, hideLoadingbar){
+    post( url , data, callback, hideLoadingbar, suppressLoggedOut){
         let loadingBar = null;
         if(hideLoadingbar === undefined){
             loadingBar = new LoadingBar();
@@ -43,8 +49,14 @@ class ReqManager{
               if(loadingBar){
                    loadingBar.done();
               }
-             
-              callback(Httpreq);
+
+              if (Httpreq.status === 401 && !suppressLoggedOut) {
+                  // We've been logged out...
+                  new Logoutmodal();
+              }
+              else {
+                  callback(Httpreq);
+              }
           }
         };
       
@@ -66,7 +78,13 @@ class ReqManager{
         Httpreq.onload = (e) => {
             if (Httpreq.readyState === 4) {
                 loadingBar.done();
-                callback(Httpreq);
+                if (Httpreq.status === 401) {
+                    // We've been logged out...
+                    new Logoutmodal();
+                }
+                else {
+                    callback(Httpreq);
+                }
             }
         };
 

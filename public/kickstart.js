@@ -40,6 +40,7 @@ manifest = [
     "lib/arcanejs-ui/js/ui/panelHandle.js",
     "lib/arcanejs-ui/js/ui/panelStack.js",
     "ui/loginscreen.js",
+    "net/logoutmodal.js",
     "net/reqmanager.js",
     "net/sessionmanager.js",
     "net/socketmanager.js",
