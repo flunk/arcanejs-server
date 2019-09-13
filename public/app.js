@@ -5,6 +5,9 @@ class App {
       	this.socketManager = new SocketManager( this );
       	this.sessionManager = new SessionManager( this );
 		this.loader = new Loader( this );
+		this.reqManager.get('/api/appname', (req) => {
+			document.title = req.responseText;
+		});
       	this.sessionManager.reauth();
     }
   

@@ -85,6 +85,7 @@ function firstRun() {
     options.twoFactorEnabled = askQuestion('Enable 2 Factor authentication? : ');
     options.sessionTimeout = readlineSync.question('Timeout session after? (seconds): ', {defaultInput: '1800'});
     options.host = readlineSync.question('Hostname to listen on: ');
+    options.title = readlineSync.question('What is the application title?: ', {defaultInput: 'ArcaneJS'});
 
     storage.setItem('options', options);
 }
@@ -216,6 +217,10 @@ app.get('/api/apps', function (req, res) {
         }
         res.send(names); //TODO: Cache this
     });
+});
+
+app.get('/api/appname', (req, res) => {
+    res.send(options.title || 'ArcaneJS');
 });
 
 app.post('/api/reauth', function (req, res) {
