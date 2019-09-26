@@ -8,6 +8,7 @@ module.exports = function ( express, app, io, rootDir ) {
     
     let os = require('os');
     let pty = require('node-pty');
+    let fs = require('fs');
     var resolve = require('path').resolve;
       
   
@@ -57,12 +58,11 @@ module.exports = function ( express, app, io, rootDir ) {
 
             if (fullPath.startsWith(rootDir)) {
                 console.log('Getdir ' + fullPath);
-                res.sendFile(fullPath);
+                res.send(getFiles(fullPath));
             } else {
                 res.statusCode = 403;
                 res.send('Forbidden');
             }
-            // res.send(getFiles(rootDir + req.query.cd));
         });
     });
 
