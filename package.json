@@ -39,7 +39,7 @@
     "socket.io": "^2.1.1",
     "speakeasy": "^2.0.0",
     "tls": "0.0.1",
-    "xterm": "^2.6.0"
+    "xterm": "^4.2.0"
   },
   "devDependencies": {
     "grunt": "^1.0.3"
